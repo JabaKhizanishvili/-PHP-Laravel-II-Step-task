@@ -21,7 +21,7 @@ class BookFactory extends Factory
         return [
                'name' => fake()->name(),
                'status' => $this->faker->randomElement([0,1]),
-            //
+               'release_date' => $this->faker->dateTimeBetween($startDate = '-10 years',$endDate = 'now')
         ];
     }
 }

@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Author;
+use App\Models\Book;
+use Illuminate\Support\Facades\Redis;
 
 class ProfileController extends Controller
 {
@@ -38,6 +41,40 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit');
+    }
+
+
+    public function addBook(Request $request){
+        return Inertia::render('AddBook',
+    [
+      'author' => Author::all(),
+    ]
+);
+    }
+
+    public function adbok(Request $request){
+    $book = new Book();
+    $book->name = $request->input('name');
+    $book->status = $request->input('status');
+    $book->release_date = $request->input('release_date');
+    $book->save();
+
+    $authorsData = $request->post('author');
+    $authorIds = collect($authorsData)->pluck('id')->toArray();
+   $saved =  $book->authors()->attach($authorIds);
+        return redirect()->route('showbook', ['success'=> $book->id]);
+
+    }
+
+    public function showbook(Request $request, Book $book){
+    return Inertia::render('ShowBook',[
+        'books'=>$book->with('authors')->get()->all()
+    ]);
+    }
+
+    public function delbook(Request $request, Book $book){
+         $book = Book::findOrFail($request->bookid);
+        $book->delete();
     }
 
     /**

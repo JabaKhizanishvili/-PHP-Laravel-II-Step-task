@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Book;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +20,8 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
+        'books' => Book::with('authors')->get()->all(),
+        'isAdmin' => Auth::user() ? Auth::user()->role : 0,
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
@@ -28,6 +32,14 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+  Route::middleware(['checkRole'])->group(function () {
+
+    Route::get('/addbook{id?}', [ProfileController::class, 'addBook'])->name('addbook');
+    Route::post('/adbok', [ProfileController::class, 'adbok'])->name('adbok');
+    Route::get('/showbooks', [ProfileController::class, 'showbook'])->name('showbook');
+    Route::get('/delbook/{bookid?}', [ProfileController::class, 'delbook'])->name('delbook');
+   });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
