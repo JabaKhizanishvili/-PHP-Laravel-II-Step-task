@@ -2,20 +2,23 @@ import { Link, Head, usePage, router } from "@inertiajs/react";
 import { useState } from 'react'
 import Select from 'react-select';
 
-export default function AddBook({
+export default function EditBook({
     auth,
     author,
+    book,
+    id,
     laravelVersion,
     phpVersion,
     isAdmin,
     books,
 }) {
 
-     const [values, setValues] = useState({
-    name: "",
-    status: "",
-    release_date: "",
-    author: [],
+    const [values, setValues] = useState({
+    bookid: book.id,
+    name: book.name,
+    status: book.status,
+    release_date: book.release_date,
+    author: book.author,
      })
 
     function handleChange(e) {
@@ -29,13 +32,13 @@ export default function AddBook({
 
       function handleSubmit(e) {
     e.preventDefault()
-    router.post('/adbok', values)
+    router.post('/edbok', values)
       }
 
     return (
         <>
             <Head title="AddBook" />
-             <h2>add Book</h2>
+             <h2>edit Book</h2>
 
              <form className="container" onSubmit={handleSubmit}>
                 <label htmlFor="name">name:</label>
@@ -64,7 +67,13 @@ export default function AddBook({
                 <label htmlFor="email">Authors</label>
 
                  <Select
-    defaultValue={[]}
+                    defaultValue={book.authors.map((e, i) => {
+                        return {
+                            id: e.id,
+                            value: e.name,
+                            label: e.name,
+                        }
+    })}
                     isMulti
                     onChange={(e) => {
                         values.author = e;

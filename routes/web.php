@@ -35,10 +35,12 @@ Route::get('/dashboard', function () {
 
   Route::middleware(['checkRole'])->group(function () {
 
-    Route::get('/addbook{id?}', [ProfileController::class, 'addBook'])->name('addbook');
+    Route::get('/addbook', [ProfileController::class, 'addBook'])->name('addbook');
+    Route::post('/edbok', [ProfileController::class, 'edbok'])->name('edbok');
     Route::post('/adbok', [ProfileController::class, 'adbok'])->name('adbok');
-    Route::get('/showbooks', [ProfileController::class, 'showbook'])->name('showbook');
+    Route::get('/showbooks/{author?}/{book?}', [ProfileController::class, 'showbook'])->name('showbook');
     Route::get('/delbook/{bookid?}', [ProfileController::class, 'delbook'])->name('delbook');
+    Route::get('/books/{bookId}', [ProfileController::class, 'editBook'])->name('editbook');
    });
 
 Route::middleware('auth')->group(function () {

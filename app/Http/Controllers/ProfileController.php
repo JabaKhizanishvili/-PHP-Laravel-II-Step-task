@@ -67,8 +67,28 @@ class ProfileController extends Controller
     }
 
     public function showbook(Request $request, Book $book){
+
+    $name = $request->input('name');
+    $author = $request->input('author');
+
+
+
+    $books = Book::when($name, function ($query) use ($name) {
+        $query->where('name', 'like', '%' . $name . '%');
+    })
+    ->when($author, function ($query) use ($author) {
+        $query->whereHas('authors', function ($subQuery) use ($author) {
+            $subQuery->where('name', 'like', '%' . $author . '%');
+        });
+    })
+    ->with('authors')->get();
+
     return Inertia::render('ShowBook',[
-        'books'=>$book->with('authors')->get()->all()
+        'books'=>$books,
+        // 'books'=>$book->with('authors')->get()->all(),
+        'author' => Author::all(),
+        'name' => $name,
+        'authorfilter' => $author,
     ]);
     }
 
@@ -77,6 +97,30 @@ class ProfileController extends Controller
         $book->delete();
     }
 
+
+ public function editBook(Request $request, $bookId)
+    {
+      return Inertia::render('EditBook',[
+        'author' => Author::all(),
+        'id' => $bookId,
+        'book' => Book::with('authors')->where('id', $bookId)->first()
+      ]);
+    }
+
+    public function edbok(Request $request){
+      $book = Book::findOrFail($request->bookid);
+
+    $book->update([
+        'name' => $request->input('name'),
+        'status' => $request->input('status'),
+        'release_date' => $request->input('release_date'),
+    ]);
+
+    $authorsData = $request->post('author');
+    $authorIds = collect($authorsData)->pluck('id')->toArray();
+    $book->authors()->sync($authorIds);
+     return redirect()->route('showbook', ['success'=> $book->id]);
+    }
     /**
      * Delete the user's account.
      */

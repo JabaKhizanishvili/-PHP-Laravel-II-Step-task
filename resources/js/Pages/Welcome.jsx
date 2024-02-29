@@ -8,12 +8,23 @@ export default function Welcome({ auth, laravelVersion, phpVersion, isAdmin, boo
                 <div className="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
                     {
                         isAdmin == 1 ? (
-                          <Link
+                            <div>
+ <Link
                             href={route('addbook')}
                             className="font-semibold mr-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
                         >
                             addbook
+                                </Link>
+
+                                 <Link
+                            href={route('showbook')}
+                            className="font-semibold mr-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
+                        >
+                            showbooks
                         </Link>
+
+                            </div>
+
                         ) : ''
                     }
 
